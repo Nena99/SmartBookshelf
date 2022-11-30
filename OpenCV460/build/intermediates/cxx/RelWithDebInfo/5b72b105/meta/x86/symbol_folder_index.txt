@@ -1,0 +1,1 @@
+C:\Users\Nena\AndroidStudioProjects\ProvaCamera\OpenCV460\build\intermediates\cxx\RelWithDebInfo\5b72b105\obj\x86

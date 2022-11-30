@@ -1,0 +1,60 @@
+# C/C++ build system timings
+create_cxx_tasks
+  create-initial-cxx-model
+    [gap of 50ms]
+    create-ARM64_V8A-model 10ms
+    [gap of 15ms]
+  create-initial-cxx-model completed in 75ms
+  [gap of 39ms]
+create_cxx_tasks completed in 114ms
+
+# C/C++ build system timings
+create_cxx_tasks
+  create-initial-cxx-model
+    create-module-model 10ms
+    create-ARMEABI_V7A-model 10ms
+    create-X86-model 10ms
+    create-module-model 10ms
+    create-variant-model 10ms
+    create-ARM64_V8A-model 15ms
+    [gap of 10ms]
+  create-initial-cxx-model completed in 95ms
+create_cxx_tasks completed in 100ms
+
+# C/C++ build system timings
+create_cxx_tasks
+  create-initial-cxx-model
+    create-module-model 15ms
+    create-variant-model 16ms
+    create-X86-model 16ms
+    create-module-model
+      create-ndk-meta-abi-list 16ms
+    create-module-model completed in 16ms
+    create-variant-model 15ms
+    create-ARM64_V8A-model 16ms
+  create-initial-cxx-model completed in 100ms
+  [gap of 16ms]
+create_cxx_tasks completed in 116ms
+
+# C/C++ build system timings
+create_cxx_tasks
+  create-initial-cxx-model
+    create-module-model 10ms
+    [gap of 30ms]
+    create-module-model 15ms
+    create-variant-model 10ms
+    create-ARMEABI_V7A-model 10ms
+    [gap of 15ms]
+  create-initial-cxx-model completed in 95ms
+create_cxx_tasks completed in 100ms
+
+# C/C++ build system timings
+create_cxx_tasks
+  create-initial-cxx-model
+    create-module-model 15ms
+    create-ARMEABI_V7A-model 16ms
+    create-module-model 15ms
+    create-ARM64_V8A-model 16ms
+  create-initial-cxx-model completed in 62ms
+create_cxx_tasks completed in 62ms
+

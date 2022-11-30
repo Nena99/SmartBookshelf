@@ -1,0 +1,1 @@
+C:\Users\Nena\AndroidStudioProjects\SmartBookshelf\OpenCV460\libcxx_helper\CMakeLists.txt
