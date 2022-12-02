@@ -1,4 +1,4 @@
-package com.example.provacamera;
+package com.example.smartbookshelf;
 
 import org.junit.Test;
 

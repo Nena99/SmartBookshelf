@@ -3,20 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
+    tools:context=".DiscoverActivity"
     android:gravity="center">
 
-    <Button
+    <TextView
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:id="@+id/camera_button"
-        android:text="CAMERA"
-        />
-
-    <Button
-        android:id="@+id/discover_button"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:text="DISCOVER" />
+        android:layout_height="wrap_content"
+        android:text="Reccomendation System"
+        android:layout_gravity="center"/>
 
 </LinearLayout>

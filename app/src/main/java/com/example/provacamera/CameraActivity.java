@@ -1,4 +1,4 @@
-package com.example.provacamera;
+package com.example.smartbookshelf;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
