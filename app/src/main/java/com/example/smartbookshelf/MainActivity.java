@@ -1,15 +1,10 @@
 package com.example.smartbookshelf;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,10 +15,19 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.smartbookshelf.R;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.smartbookshelf.ml.Model;
 
+import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
 import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
@@ -32,10 +36,20 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public class MainActivity extends AppCompatActivity {
-    // variable for the button
+
+    // check that OpenCV is added successfully
+    static{
+        if(OpenCVLoader.initDebug()){
+            Log.d("Check","OpenCv configured successfully");
+        } else{
+            Log.d("Check","OpenCv doesn’t configured successfully");
+        }
+    }
+
     private Button camera_button, gallery_button;
     private Button discover_button;
     ImageView imageView;
+    ImageView imageView2;
     TextView result;
     int imageSize = 32;
 
@@ -52,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
         result = findViewById(R.id.result);
         imageView = findViewById(R.id.imageView);
+        imageView2 = findViewById(R.id.imageView2);
 
         // Initialize CAMERA button
         camera_button.setOnClickListener(new View.OnClickListener() {
@@ -130,11 +145,28 @@ public class MainActivity extends AppCompatActivity {
             String[] classes = {"Apple", "Banana", "Orange"};
             result.setText(classes[maxPos]);
 
-            // releases model resources if no longer used.
+            // releases model resources if no longer used
             model.close();
         } catch (IOException e) {
-            // TODO Handle the exception
+            e.printStackTrace();
         }
+    }
+
+    public void edgeScanner(Bitmap image){
+        Bitmap inputBitmap = image.copy(Bitmap.Config.RGB_565, true);
+        Mat inputImage = new Mat(inputBitmap.getWidth(),inputBitmap.getHeight(), CvType.CV_8UC1);
+        Utils.bitmapToMat(inputBitmap, inputImage);
+
+        // Repeated closing operation to remove text from the document.
+        Mat outputImage = new Mat();
+        Mat element = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(5, 5));
+        Imgproc.morphologyEx(inputImage ,outputImage, Imgproc.MORPH_OPEN, element);
+
+        Bitmap.Config config = Bitmap.Config.RGB_565;
+        Bitmap outputBitmap = Bitmap.createBitmap(inputBitmap.getWidth(),inputBitmap.getHeight(), config);
+        Utils.matToBitmap(inputImage, outputBitmap);
+        imageView2.setImageBitmap(outputBitmap);
+        result.setText("Done!");
     }
 
     @Override
@@ -143,34 +175,37 @@ public class MainActivity extends AppCompatActivity {
             // 3 is the requestCode we use for the camera_button clicker
             if(requestCode == 3){
                 // get the image as a Bitmap
-                Bitmap image = (Bitmap) data.getExtras().get("data");
+                Bitmap original_image = (Bitmap) data.getExtras().get("data");
 
                 // if the model is trained on squared images
                 //int dimension = Math.min(image.getWidth(), image.getHeight());
                 //image = ThumbnailUtils.extractThumbnail(image, dimension, dimension);
 
                 // to display the picture the user took
-                imageView.setImageBitmap(image);
+                //imageView.setImageBitmap(image);
+
                 // to change the original 32x32 image size
-                image = Bitmap.createScaledBitmap(image, imageSize, imageSize, false);
+                //image = Bitmap.createScaledBitmap(original_image, imageSize, imageSize, false);
+                imageView.setImageBitmap(original_image);
                 // function to start the TFlite model with the image taken
-                classifyImage(image);
+                edgeScanner(original_image);
             } else {
-                Uri dat = data.getData();
-                Bitmap image = null;
                 // take the picture form the gallery
+                Uri dat = data.getData();
+                Bitmap original_image = null;
                 try {
-                    image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), dat);
+                    original_image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), dat);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                imageView.setImageBitmap(image);
+                imageView.setImageBitmap(original_image);
                 // to change the original 32x32 image size
-                image = Bitmap.createScaledBitmap(image, imageSize, imageSize, false);
+                Bitmap image = Bitmap.createScaledBitmap(original_image, imageSize, imageSize, false);
                 // function to start the TFlite model with the image taken
-                classifyImage(image);
+                edgeScanner(original_image);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 }
+
