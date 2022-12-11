@@ -26,6 +26,7 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.tensorflow.lite.DataType;
@@ -153,18 +154,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void edgeScanner(Bitmap image){
+        int elementType = Imgproc.CV_SHAPE_RECT;
         Bitmap inputBitmap = image.copy(Bitmap.Config.RGB_565, true);
         Mat inputImage = new Mat(inputBitmap.getWidth(),inputBitmap.getHeight(), CvType.CV_8UC1);
         Utils.bitmapToMat(inputBitmap, inputImage);
 
         // Repeated closing operation to remove text from the document.
         Mat outputImage = new Mat();
-        Mat element = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(5, 5));
-        Imgproc.morphologyEx(inputImage ,outputImage, Imgproc.MORPH_OPEN, element);
+        Mat kernel = Mat.ones(5, 5, CvType.CV_8U);
+        //Mat element = Imgproc.getStructuringElement(Imgproc.MORPH_CLOSE, new Size(5, 5));
+        Imgproc.morphologyEx(inputImage ,outputImage, Imgproc.MORPH_CLOSE, kernel, new Point(-1,-1), 13);
 
         Bitmap.Config config = Bitmap.Config.RGB_565;
         Bitmap outputBitmap = Bitmap.createBitmap(inputBitmap.getWidth(),inputBitmap.getHeight(), config);
-        Utils.matToBitmap(inputImage, outputBitmap);
+        Utils.matToBitmap(outputImage, outputBitmap);
         imageView2.setImageBitmap(outputBitmap);
         result.setText("Done!");
     }
