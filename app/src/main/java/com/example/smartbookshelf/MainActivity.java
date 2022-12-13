@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,22 +20,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.smartbookshelf.ml.Model;
+import com.websitebeaver.documentscanner.DocumentScanner;
 
-import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.android.Utils;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
-import org.tensorflow.lite.DataType;
-import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,16 +33,40 @@ public class MainActivity extends AppCompatActivity {
         if(OpenCVLoader.initDebug()){
             Log.d("Check","OpenCv configured successfully");
         } else{
-            Log.d("Check","OpenCv doesn’t configured successfully");
+            Log.d("Check","OpenCv does not configured successfully");
         }
     }
 
     private Button camera_button, gallery_button;
     private Button discover_button;
-    ImageView imageView;
-    ImageView imageView2;
+    //ImageView imageView;
+    //ImageView imageView2;
     TextView result;
     int imageSize = 32;
+
+    private ImageView croppedImageView;
+
+    DocumentScanner documentScanner = new DocumentScanner(
+            this,
+            (croppedImageResults) -> {
+                // display the first cropped image
+                croppedImageView.setImageBitmap(BitmapFactory.decodeFile(croppedImageResults.get(0)));
+                return null;
+            },
+            (errorMessage) -> {
+                // an error happened
+                Log.v("documentscannerlogs", errorMessage);
+                return null;
+            },
+            () -> {
+                // user canceled document scan
+                Log.v("documentscannerlogs", "User canceled document scan");
+                return null;
+            },
+            null,
+            false,
+            1
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,14 +75,17 @@ public class MainActivity extends AppCompatActivity {
         // blocks the rotation of the screen
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+        // cropped image
+        croppedImageView = findViewById(R.id.cropped_image_view);
+
         camera_button=findViewById(R.id.camera_button);
         gallery_button=findViewById(R.id.gallery_button);
         discover_button=findViewById(R.id.discover_button);
 
-        result = findViewById(R.id.result);
-        imageView = findViewById(R.id.imageView);
-        imageView2 = findViewById(R.id.imageView2);
-
+        //result = findViewById(R.id.result);
+        //imageView = findViewById(R.id.imageView);
+        //imageView2 = findViewById(R.id.imageView2);
+/*
         // Initialize CAMERA button
         camera_button.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
@@ -81,6 +98,15 @@ public class MainActivity extends AppCompatActivity {
                     requestPermissions(new String[]{Manifest.permission.CAMERA}, 100);
                 }
                 //startActivity(new Intent(MainActivity.this, CameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            }
+        });
+*/
+        // Initialize CAMERA button
+        camera_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent cameraIntent = new Intent(documentScanner.createDocumentScanIntent());
+                startActivityForResult(cameraIntent, 2);
             }
         });
 
@@ -176,36 +202,24 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(resultCode == RESULT_OK){
             // 3 is the requestCode we use for the camera_button clicker
-            if(requestCode == 3){
+            if(requestCode == 0){
                 // get the image as a Bitmap
                 Bitmap original_image = (Bitmap) data.getExtras().get("data");
-
-                // if the model is trained on squared images
-                //int dimension = Math.min(image.getWidth(), image.getHeight());
-                //image = ThumbnailUtils.extractThumbnail(image, dimension, dimension);
-
                 // to display the picture the user took
                 //imageView.setImageBitmap(image);
-
-                // to change the original 32x32 image size
-                //image = Bitmap.createScaledBitmap(original_image, imageSize, imageSize, false);
-                imageView.setImageBitmap(original_image);
-                // function to start the TFlite model with the image taken
-                //edgeScanner(original_image);
-            } else {
+            } else if(requestCode == 1) {
                 // take the picture form the gallery
                 Uri dat = data.getData();
-                Bitmap original_image = null;
+                Bitmap galleryImage = null;
                 try {
-                    original_image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), dat);
+                    galleryImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), dat);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                imageView.setImageBitmap(original_image);
-                // to change the original 32x32 image size
-                Bitmap image = Bitmap.createScaledBitmap(original_image, imageSize, imageSize, false);
-                // function to start the TFlite model with the image taken
-                //edgeScanner(original_image);
+                croppedImageView.setImageBitmap(galleryImage);
+            } else if(requestCode == 2){
+                // start document scan
+                documentScanner.startScan();
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
