@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
+/*
     public void classifyImage(Bitmap image){
         try {
             Model model = Model.newInstance(getApplicationContext());
@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
         imageView2.setImageBitmap(outputBitmap);
         result.setText("Done!");
     }
-
+*/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(resultCode == RESULT_OK){
@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
                 //image = Bitmap.createScaledBitmap(original_image, imageSize, imageSize, false);
                 imageView.setImageBitmap(original_image);
                 // function to start the TFlite model with the image taken
-                edgeScanner(original_image);
+                //edgeScanner(original_image);
             } else {
                 // take the picture form the gallery
                 Uri dat = data.getData();
@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                 // to change the original 32x32 image size
                 Bitmap image = Bitmap.createScaledBitmap(original_image, imageSize, imageSize, false);
                 // function to start the TFlite model with the image taken
-                edgeScanner(original_image);
+                //edgeScanner(original_image);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
