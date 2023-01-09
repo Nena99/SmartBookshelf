@@ -1,24 +1,30 @@
 package com.example.smartbookshelf;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.websitebeaver.documentscanner.DocumentScanner;
 
@@ -37,15 +43,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private Button camera_button, gallery_button;
+    private Button bookcover_button;
     private Button discover_button;
     //ImageView imageView;
     //ImageView imageView2;
     TextView result;
     int imageSize = 32;
-
-    private ImageView croppedImageView;
-
+/*
     DocumentScanner documentScanner = new DocumentScanner(
             this,
             (croppedImageResults) -> {
@@ -67,19 +71,24 @@ public class MainActivity extends AppCompatActivity {
             false,
             1
     );
-
+*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
+
+        // gradient background
+        RelativeLayout relLayout = findViewById(R.id.mainLayout);
+        AnimationDrawable animDrawable = (AnimationDrawable) relLayout.getBackground();
+        animDrawable.setEnterFadeDuration(1000);
+        animDrawable.setExitFadeDuration(3000);
+        animDrawable.start();
+
         // blocks the rotation of the screen
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        // cropped image
-        croppedImageView = findViewById(R.id.cropped_image_view);
-
-        camera_button=findViewById(R.id.camera_button);
-        gallery_button=findViewById(R.id.gallery_button);
+        bookcover_button=findViewById(R.id.bookcover_button);
         discover_button=findViewById(R.id.discover_button);
 
         //result = findViewById(R.id.result);
@@ -101,21 +110,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 */
-        // Initialize CAMERA button
-        camera_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent cameraIntent = new Intent(documentScanner.createDocumentScanIntent());
-                startActivityForResult(cameraIntent, 2);
-            }
-        });
 
-        // Initialize the GALLERY button
-        gallery_button.setOnClickListener(new View.OnClickListener() {
+        // Initialize book cover button
+        bookcover_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent cameraIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(cameraIntent, 1);
+                Intent bookcover_intent = new Intent(MainActivity.this, BookCoverActivity.class);
+                startActivity(bookcover_intent);
             }
         });
 
@@ -197,32 +198,6 @@ public class MainActivity extends AppCompatActivity {
         imageView2.setImageBitmap(outputBitmap);
         result.setText("Done!");
     }
-*/
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if(resultCode == RESULT_OK){
-            // 3 is the requestCode we use for the camera_button clicker
-            if(requestCode == 0){
-                // get the image as a Bitmap
-                Bitmap original_image = (Bitmap) data.getExtras().get("data");
-                // to display the picture the user took
-                //imageView.setImageBitmap(image);
-            } else if(requestCode == 1) {
-                // take the picture form the gallery
-                Uri dat = data.getData();
-                Bitmap galleryImage = null;
-                try {
-                    galleryImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), dat);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                croppedImageView.setImageBitmap(galleryImage);
-            } else if(requestCode == 2){
-                // start document scan
-                documentScanner.startScan();
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
+*/ /**/
 }
 

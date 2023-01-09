@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="@drawable/gradient_list"
+    android:id="@+id/mainLayout">
 
     <Button
         android:id="@+id/discover_button"
@@ -11,46 +13,22 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="false"
         android:layout_centerHorizontal="true"
-        android:text="Discover"
-        android:textSize="21sp" />
+        android:layout_marginTop="50dp"
+        android:text="discover"
+        android:textSize="21sp"
+        android:backgroundTint="@android:color/transparent"
+        android:shadowColor="@color/white"/>
 
     <Button
-        android:id="@+id/camera_button"
+        android:id="@+id/bookcover_button"
         android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/discover_button"
-        android:layout_centerInParent="true"
-        android:text="scan"
-        android:textSize="21sp" />
-
-    <Button
-        android:id="@+id/gallery_button"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/camera_button"
-        android:layout_centerInParent="true"
-        android:text="gallery"
-        android:textSize="21sp" />
-
-    <ImageView
-        android:id="@+id/cropped_image_view"
-        android:layout_width="400dp"
-        android:layout_height="400dp"
-        android:layout_centerInParent="true"
-        android:layout_below="@id/gallery_button"
-        android:layout_marginTop="30sp"/>
-
-    <TextView
-        android:id="@+id/result"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text=""
-        android:textColor="@color/purple_500"
-        android:textStyle="bold"
-        android:textSize="27sp"
-        android:layout_below="@+id/cropped_image_view"
-        android:layout_marginTop="30sp"
-        />
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"
+        android:text="scan book cover"
+        android:textSize="21sp"
+        android:backgroundTint="@android:color/transparent"
+        android:shadowColor="@color/white"/>
 
 </RelativeLayout>
